@@ -38,7 +38,7 @@ public class SincronizacaoReceita {
 
     public static void main(String[] args) {
         SpringApplication.run(SincronizacaoReceita.class, args);
-        System.out.print("");
+
 
         // Exemplo como chamar o "serviço" do Banco Central.
         // ReceitaService receitaService = new ReceitaService();
