@@ -29,6 +29,7 @@ agencia;conta;saldo;status
 */
 package SincronizaReceita;
 
+import ch.qos.logback.core.net.SyslogOutputStream;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -37,7 +38,7 @@ public class SincronizacaoReceita {
 
     public static void main(String[] args) {
         SpringApplication.run(SincronizacaoReceita.class, args);
-
+        System.out.print("");
 
         // Exemplo como chamar o "serviço" do Banco Central.
         // ReceitaService receitaService = new ReceitaService();
