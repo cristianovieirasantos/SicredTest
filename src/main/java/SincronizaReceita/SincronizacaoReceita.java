@@ -29,20 +29,119 @@ agencia;conta;saldo;status
 */
 package SincronizaReceita;
 
-import ch.qos.logback.core.net.SyslogOutputStream;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.*;
 
 @SpringBootApplication
 public class SincronizacaoReceita {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         SpringApplication.run(SincronizacaoReceita.class, args);
 
+        if (args[0] ==null) {
+            System.out.println("Você precisa informar como parametro o endereço do arquivo a ser importado como segue o exemplo abaixo.");
+            System.out.println("java -jar sicred.jar \"C:\\receita.cvs\" ");
+            System.exit(0);
+        }
 
-        // Exemplo como chamar o "serviço" do Banco Central.
-        // ReceitaService receitaService = new ReceitaService();
-        // receitaService.atualizarConta("0101", "123456", 100.50, "A");        
+        if (!diaUtil(new Date())){
+            System.out.println("A sincronia de dados só pode ser feita em dias úteis, a aplicação será finalizada.");
+            System.exit(0);
+        }
+
+        if ((args[0]==null) || (args[0].length()==0)) {
+            System.out.println("Para a aplicação funcionar é necessário informar o nome do arquivo que será importado.");
+            System.exit(0);
+        }
+
+        if (!existeArquivo(args[0])) {
+            System.out.println("O arquivo para a sincronia não foi encontrado.");
+            System.exit(0);
+        }
+
+        System.out.println("Iniciando sincronização de dados...");
+
+        ReceitaService objReceita = new ReceitaService();
+        File file = new File(args[0]);
+        Scanner sc = null;
+
+        try {
+            sc = new Scanner(file);
+            /* Escreve o arquivo de retorno*/
+            PrintWriter writer = new PrintWriter(new File("retornoSincronia.csv"));
+
+            /* Escreve o cabeçalho do arquivo*/
+            StringBuilder sb = new StringBuilder();
+            sb.append("agencia;");
+            sb.append("conta;");
+            sb.append("saldo;");
+            sb.append("status;");
+            sb.append("retorno;");
+            sb.append('\n');
+            while (sc.hasNextLine()) {
+                String[] valoresLinha = sc.nextLine().split(";");
+                if (eNumero(valoresLinha[0])){
+                    try {
+                        escreveLinha(sb, valoresLinha,
+                                    objReceita.atualizarConta(valoresLinha[0], valoresLinha[1].replaceAll("-", ""), Double.parseDouble(valoresLinha[2].replaceAll(",", ".")), valoresLinha[3])
+                        );
+
+                        } catch (Exception ex) {
+                           escreveLinha(sb,  valoresLinha, false);
+                        }
+                }
+
+            }
+            writer.write(sb.toString());
+            writer.close();
+
+            System.out.println("O arquivo retornoSincronia.csv foi criado.");
+            System.out.println("Sincronização feita com sucesso!");
+        } catch(Exception ex) {
+            System.out.println("Erro ocorrido na sincronização !");
+            System.out.println(ex.getMessage());
+            ex.printStackTrace();
+        } finally {
+            sc.close();
+        }
+    }
+
+    private static void escreveLinha(StringBuilder sb, String[] arrStr, Boolean valorQuintaColuna){
+        sb.append(arrStr[0]);
+        sb.append(';');
+        sb.append(arrStr[1]);
+        sb.append(';');
+        sb.append(arrStr[2]);
+        sb.append(';');
+        sb.append(arrStr[3]);
+        sb.append(';');
+        sb.append(valorQuintaColuna);
+        sb.append('\n');
+    }
+
+    /*Verifica se é dia útil (sem levar em conta os feriados) */
+    public static boolean diaUtil(Date date) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        return ( (cal.get(Calendar.DAY_OF_WEEK)!=1)&&(cal.get(Calendar.DAY_OF_WEEK)!=7) );
+    }
+
+    /* Metodo que verifica se o valor String é número ou não */
+    private static boolean eNumero(String str) {
+        return str.matches("[+-]?\\d*(\\.\\d+)?");
+    }
+
+    public static boolean existeArquivo(String strCaminho) {
+        if ((strCaminho!=null) && (new File(strCaminho).exists())) {
+            return true;
+        } else {
+            return false;
+        }
     }
     
 }

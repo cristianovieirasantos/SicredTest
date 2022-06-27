@@ -42,7 +42,7 @@ public class ReceitaService {
         // Simula cenario de erro no serviço (0,1% de erro)
         long randomError = Math.round(Math.random() * 1000);
         if (randomError == 500) {
-            throw new RuntimeException("Error");
+          throw new RuntimeException("Error");
         }
 
         return true;

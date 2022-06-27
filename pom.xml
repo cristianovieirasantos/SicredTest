@@ -11,7 +11,7 @@
 	<groupId>br.com.sicredi</groupId>
 	<artifactId>sicredi</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 	<name>sicredi</name>
 	<description>Teste de importação de arquivo CSV</description>
 	<properties>
@@ -32,6 +32,11 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.opencsv</groupId>
+			<artifactId>opencsv</artifactId>
+			<version>4.2</version>
 		</dependency>
 	</dependencies>
 
