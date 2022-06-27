@@ -31,3 +31,5 @@ build/
 
 ### VS Code ###
 .vscode/
+/hs_err_pid3928.log
+/out/artifacts/sicredi_jar/sicredi.jar
