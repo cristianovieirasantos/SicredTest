@@ -43,7 +43,7 @@ public class SincronizacaoReceita {
     public static void main(String[] args) throws IOException {
         SpringApplication.run(SincronizacaoReceita.class, args);
 
-        if (args[0] ==null) {
+        if (args.length==0) {
             System.out.println("Você precisa informar como parametro o endereço do arquivo a ser importado como segue o exemplo abaixo.");
             System.out.println("java -jar sicred.jar \"C:\\receita.cvs\" ");
             System.exit(0);
