@@ -43,28 +43,30 @@ public class SincronizacaoReceita {
     public static void main(String[] args) throws IOException {
         SpringApplication.run(SincronizacaoReceita.class, args);
 
+        if (!verificaHorario()) {
+            System.out.println("\n\nSó é possível fazer a importação antes das 10:00 horas da manhã.");
+            System.exit(0);
+        }
+
+
         if (args.length==0) {
-            System.out.println("Você precisa informar como parametro o endereço do arquivo a ser importado como segue o exemplo abaixo.");
-            System.out.println("java -jar sicred.jar \"C:\\receita.cvs\" ");
+            System.out.println("\n\n=========================================================================================================");
+            System.out.println("\nVocê precisa informar como parametro o endereço do arquivo a ser importado como segue o exemplo abaixo:");
+            System.out.println("java -jar arquivo.jar \"C:\\receita.cvs\" ");
             System.exit(0);
         }
 
         if (!diaUtil(new Date())){
-            System.out.println("A sincronia de dados só pode ser feita em dias úteis, a aplicação será finalizada.");
-            System.exit(0);
-        }
-
-        if ((args[0]==null) || (args[0].length()==0)) {
-            System.out.println("Para a aplicação funcionar é necessário informar o nome do arquivo que será importado.");
+            System.out.println("\nA sincronia de dados só pode ser feita em dias úteis, a aplicação será finalizada.");
             System.exit(0);
         }
 
         if (!existeArquivo(args[0])) {
-            System.out.println("O arquivo para a sincronia não foi encontrado.");
+            System.out.println("\nO arquivo para a sincronia não foi encontrado.");
             System.exit(0);
         }
 
-        System.out.println("Iniciando sincronização de dados...");
+        System.out.println("\nIniciando sincronização de dados, por favor aguarde...");
 
         ReceitaService objReceita = new ReceitaService();
         File file = new File(args[0]);
@@ -100,8 +102,12 @@ public class SincronizacaoReceita {
             writer.write(sb.toString());
             writer.close();
 
-            System.out.println("O arquivo retornoSincronia.csv foi criado.");
-            System.out.println("Sincronização feita com sucesso!");
+            System.out.println("\n======> O arquivo retornoSincronia.csv foi criado na pasta onde esta o arquivo .JAR. <======");
+            System.out.println("======> Sincronização feita com sucesso! <======");
+            System.out.println("======> Fechando aplicação... <======");
+            long wait = Math.round(Math.random() * 2000) + 1000;
+            Thread.sleep(wait);
+            System.exit(0);
         } catch(Exception ex) {
             System.out.println("Erro ocorrido na sincronização !");
             System.out.println(ex.getMessage());
@@ -109,6 +115,12 @@ public class SincronizacaoReceita {
         } finally {
             sc.close();
         }
+    }
+
+    private static boolean verificaHorario() {
+        Calendar cal = Calendar.getInstance();
+
+        return (cal.get(Calendar.HOUR_OF_DAY)<10);
     }
 
     private static void escreveLinha(StringBuilder sb, String[] arrStr, Boolean valorQuintaColuna){
